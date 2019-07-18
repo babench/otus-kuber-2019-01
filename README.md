@@ -2,11 +2,11 @@
 SergeSpinoza Platform repository
 
 ## Оглавление
-1. [Домашнее задание №1](#Домашнее-задание-№1)
-2. [Домашнее задание №2](#Домашнее-задание-№2)
+1. [Домашнее задание №1, Minikube](#домашнее-задание-1)
+2. [Домашнее задание №2, RBAC](#домашнее-задание-2)
 
 <br><br>
-## Домашнее задание №1
+## Домашнее задание 1
 ### Выполнено
 - Развернут minikube ( https://kubernetes.io/docs/tasks/tools/install-minikube/ );
 - Добавлен Dashboard (команда `minikube addons enable dashboard`, зайти в панель - команда `minikube dashboard`);
@@ -38,12 +38,23 @@ SergeSpinoza Platform repository
 
 
 <br><br>
-## Домашнее задание №2
+## Домашнее задание 2
 ### Выполнено
-- 
-
+- TASK 01:
+  - Создать Service Account bob, дать ему роль admin в рамках всего кластера;
+  - Создать Service Account dave без доступа к кластеру;
+- TASK 02:
+  - Создать Namespace prometheus;
+  - Создать Service Account carol в этом Namespace;
+  - Дать всем Service Account в Namespace prometheus возможность делать get, list, watch в отношении Pods всего кластера;
+- TASK 03:
+  - Создать Namespace dev;
+  - Создать Service Account jane в Namespace dev;
+  - Дать jane роль admin в рамках Namespace dev;
+  - Создать Service Account ken в Namespace dev;
+  - Дать ken роль view в рамках Namespace dev.
 
 ### Полезное
 Команды: 
-- `kubectl auth can-i get/create ...` - проверка прав;
+- `kubectl auth can-i get/create ...` - проверка прав/возможности создания (пример `kubectl auth can-i get deployments --as system:serviceaccount:dev:ken -n dev`, `kubectl auth can-i create deployments --as system:serviceaccount:dev:ken -n dev`).
 
