@@ -3,6 +3,7 @@ SergeSpinoza Platform repository
 
 ## Оглавление
 1. [Домашнее задание №1](#Домашнее-задание-№1)
+2. [Домашнее задание №2](#Домашнее-задание-№2)
 
 <br><br>
 ## Домашнее задание №1
@@ -34,4 +35,15 @@ SergeSpinoza Platform repository
 - `kubectl apply -f file.yaml` - применить манифест;  
 - `kubectl get pod web -o yaml` - получить манифест уже запущенного pod;
 - `kubectl port-forward --address 0.0.0.0 pod/web 8000:8000` - редирект порта (в примере 8000);
+
+
+<br><br>
+## Домашнее задание №2
+### Выполнено
+- 
+
+
+### Полезное
+Команды: 
+- 
 
