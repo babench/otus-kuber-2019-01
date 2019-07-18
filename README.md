@@ -54,6 +54,7 @@ SergeSpinoza Platform repository
   - Создать Service Account ken в Namespace dev;
   - Дать ken роль view в рамках Namespace dev.
 
+
 ### Полезное
 Команды: 
 - `kubectl auth can-i get/create ...` - проверка прав/возможности создания (пример `kubectl auth can-i get deployments --as system:serviceaccount:dev:ken -n dev`, `kubectl auth can-i create deployments --as system:serviceaccount:dev:ken -n dev`).
