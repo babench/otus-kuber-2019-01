@@ -45,5 +45,5 @@ SergeSpinoza Platform repository
 
 ### Полезное
 Команды: 
-- 
+- `kubectl auth can-i get/create ...` - проверка прав;
 
