@@ -5,6 +5,7 @@ SergeSpinoza Platform repository
 1. [Домашнее задание №1, Minikube](#домашнее-задание-1)
 2. [Домашнее задание №2, RBAC](#домашнее-задание-2)
 3. [Домашнее задание №3, Сети](#домашнее-задание-3)
+4. [Домашнее задание №4, Volumes, Storages, StatefulSet](#домашнее-задание-4)
 
 <br><br>
 ## Домашнее задание 1
@@ -147,4 +148,31 @@ The Deployment "web" is invalid: spec.strategy.rollingUpdate.maxUnavailable: Inv
 - `kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.0/manifests/metallb.yaml` - установка MetalLb;
 - `kubectl --namespace metallb-system logs controller-xxxxxxxxxxx-xxxxx` - логи контроллера MetalLB
 - `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml` или `minikube addons enable ingress` - установка ingress-nginx;
+
+
+<br><br>
+## Домашнее задание 4
+### Выполнено
+- Установлен и запущен kind ( https://github.com/kubernetes-sigs/kind/ );
+- Развернут StatefulSet с Minio;
+- Развернут Headless Service.
+
+
+### Задание со * 
+- Учетные данные из StatefulSet вынесены в secret (манифест 01-minio-secret.yaml);
+- Для кодирования учетных данных в base64 необходимо выполнить команды:  
+  - `echo -n 'login' | base64`;
+  - `echo -n 'password' | base64`
+- Полученные значения записать в secret манифест. 
+
+
+### Полезное
+Команды: 
+- `kind create cluster` - запуск кластера kind;
+- `kind delete cluster` - удаление кластера kind
+- `kubectl get statefulsets`
+- `kubectl get pods`
+- `kubectl get pvc`
+- `kubectl get pv`
+- `kubectl describe <resource> <resource_name>`
 
