@@ -8,6 +8,12 @@ spec:
   containers:
   - name: web
     image: s1spinoza/k8s-httpserver-8000:latest
+    readinessProbe: # Добавим проверку готовности
+      httpGet: # веб-сервера отдавать
+        path: /index.html # контент
+        port: 80
+    livenessProbe:
+      tcpSocket: { port: 8000 }
     volumeMounts:
     - name: app
       mountPath: /app

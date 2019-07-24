@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web # Название нашего объекта Deployment
+spec:
+  replicas: 3 # Начнем с одного пода
+  selector: # Укажем, какие поды относятся к нашему Deployment:
+    matchLabels: # - это поды с меткой
+      app: web # app и ее значением web
+  template: # Теперь зададим шаблон конфигурации пода
+    metadata:
+      name: web
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: web
+        image: s1spinoza/k8s-httpserver-8000:latest
+        livenessProbe:
+          tcpSocket: 
+            port: 8000
+        readinessProbe: # Добавим проверку готовности
+          httpGet: # веб-сервера отдавать
+            path: /index.html # контент
+            port: 8000
+        volumeMounts:
+        - name: app
+          mountPath: /app
+      initContainers:
+      - name: init-web
+        image: busybox:1.31.0
+        command: ['sh', '-c', 'wget -O- https://raw.githubusercontent.com/express42/otus-platform-snippets/master/Module-02/Introduction-to-Kubernetes/wget.sh | sh']
+        volumeMounts:
+        - name: app
+          mountPath: /app
+      volumes:
+      - name: app
+        emptyDir: {}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 100%
+      maxSurge: 0
