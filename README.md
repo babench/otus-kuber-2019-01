@@ -69,7 +69,7 @@ SergeSpinoza Platform repository
 - Создали манифест сервиса с ClusterIP web-svc-cip;
 - Переключили kube-proxy в режим `ipvs`; 
 - Очистили правила iptables в minikube от мусора; 
-- Настроили работу с MetalLB (к сожалению в macos доступ через браузер получить не удалось даже с пропианным маршрутом и драйвером hyperkit);
+- Настроили работу с MetalLB (к сожалению в macos доступ через браузер получить не удалось даже с прописанным маршрутом и драйвером hyperkit);
 - Установили и настроили работу ingress-nginx; 
 
 ### Задание со * 
@@ -85,7 +85,7 @@ Address 1: 172.17.0.7 172-17-0-7.web-svc.default.svc.cluster.local
 Address 2: 172.17.0.9 172-17-0-9.web-svc.default.svc.cluster.local
 Address 3: 172.17.0.8 172-17-0-8.web-svc.default.svc.cluster.local
 ```
-- Добавлен доступ к kubernetes-dashboard через настроенный ingress-proxy (манифес добавлен в файл `web-ingress.yaml`);
+- Добавлен доступ к kubernetes-dashboard через настроенный ingress-proxy (манифест добавлен в файл `web-ingress.yaml`);
 - Реализовано канареечное развертывание, манифесты `canary-namespaces.yaml` и `canary-ingress.yaml`. 
 
 ### Развертывание и проверка канареечного развертывания: 
