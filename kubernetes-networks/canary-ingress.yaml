@@ -1,0 +1,36 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: http-svc
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  namespace: echo-production
+spec:
+  rules:
+  - host: echo.com
+    http:
+      paths:
+      - backend:
+          serviceName: http-svc
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: http-svc
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-by-header: "CanaryByHeader"
+    nginx.ingress.kubernetes.io/canary-by-header-value: "DoCanary"
+  namespace: echo-canary
+spec:
+  rules:
+  - host: echo.com
+    http:
+      paths:
+      - backend:
+          serviceName: http-svc
+          servicePort: 80
+
