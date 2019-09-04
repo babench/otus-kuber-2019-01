@@ -1,0 +1,19 @@
+# Conf files #
+###################
+variables.json
+*.tfstate
+*.tfstate.*.backup
+*.tfstate.backup
+*.tfvars
+.terraform/
+mongrelion.docker
+.env
+kubernetes/Charts/Gitlab_ci
+
+# Certs
+*.crt
+*.key
+
+# my folders
+_lesson09_backup_and_recover_etcd*
+_lesson10_upgrade_cluster*
