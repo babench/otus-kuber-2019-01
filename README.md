@@ -176,3 +176,28 @@ The Deployment "web" is invalid: spec.strategy.rollingUpdate.maxUnavailable: Inv
 - `kubectl get pv`
 - `kubectl describe <resource> <resource_name>`
 
+
+<br><br>
+## Домашнее задание 5. Kubernetes-storage
+### Выполнено
+- Подготовлен файл cluster.yaml с необходимой конфигурацией для kind;
+- В директории `hw` созданы манифесты для создания объектов StorageClass, pvc и pod. 
+
+
+### Как запустить: 
+#### Предварительные действия: 
+- Установить go версии > 1.13 (https://sourabhbajaj.com/mac-setup/Go/README.html)
+- Установить kind (https://kind.sigs.k8s.io/docs/user/quick-start/)
+- Перейти в директорию `kubernetes-storage/cluster` и создать кластер с помощью kind с кастомным конфигом: `kind create cluster --config cluster.yaml`
+- Задать переменную окружения, для использования конфига kind: `export KUBECONFIG="$(kind get kubeconfig-path)"`
+- Установить CSI Host Path Driver: 
+  - `git clone https://github.com/kubernetes-csi/csi-driver-host-path.git`
+  - `./csi-driver-host-path/deploy/kubernetes-1.15/deploy-hostpath.sh`
+
+#### Основные действия: 
+- Перейти в директорию `kubernetes-storage/hw` и последовательно выполнить: 
+  - `kubectl apply -f 01-storageclass.yaml`
+  - `kubectl apply -f 02-storage-pvc.yaml`
+  - `kubectl apply -f 03-storage-pod.yaml`
+- Проверить результат. 
+
