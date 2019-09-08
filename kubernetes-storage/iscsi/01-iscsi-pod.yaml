@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: iscsi-pod
+spec:
+  restartPolicy: Always
+  containers:
+  - name: iscsi-pod
+    image: ubuntu:18.04
+    command: ["/bin/sh", "-c", "tail -f /dev/null"]
+    volumeMounts:
+      - name: iscsi-volume
+        mountPath: /mnt
+  volumes:
+  - name: iscsi-volume
+    iscsi:
+      targetPortal: 10.10.90.5:3260
+      iqn: iqn.2003-01.org.linux-iscsi.iscsi-1.x8664:sn.c0904cfa5297
+      fsType: ext4
+      lun: 0
+      readOnly: false
+

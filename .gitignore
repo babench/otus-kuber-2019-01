@@ -17,3 +17,5 @@ kubernetes/Charts/Gitlab_ci
 # my folders
 _lesson09_backup_and_recover_etcd*
 _lesson10_upgrade_cluster*
+kubespray
+
