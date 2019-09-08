@@ -204,7 +204,7 @@ The Deployment "web" is invalid: spec.strategy.rollingUpdate.maxUnavailable: Inv
 - Проверить результат. 
 
 #### Задание со * 
-**Для развертывания iscsi необходимо выполнить команды на чистой машине с ubuntu 18.04: **
+**Для развертывания iscsi необходимо выполнить команды на чистой машине с ubuntu 18.04:**
 - `apt -y install targetcli-fb` - устанавливаем targetcli;
 - Добавляем еще один диск (допустим /dev/sdb); 
 - Произведем действия, для создания lvm 
@@ -225,7 +225,7 @@ q
 # mkfs.ext4 /dev/vg0/base
 ```
 
-**Для создания блочного устройства на отдельном диске: **
+**Для создания блочного устройства на отдельном диске:**
 - `targetcli` - открывает targetcli
   - `/> ls` - просмотр иерархии;
   - `/> backstores/block create name=iscsi-disk dev=/dev/vg0/base` - создаем блочное устройство в бэксторе;
@@ -254,7 +254,7 @@ q
 - отредактировать файл `inventory/mycluster/inventory.ini` согласно структуре кластера;
 - `ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root --user=spinoza --key-file=~/.ssh/id_rsa cluster.yml` - развернуть кластер; 
 
-**Действия на воркер-нодах кластера kubernetes: **
+**Действия на воркер-нодах кластера kubernetes:**
 - `apt -y install open-iscsi` - установим open-iscsi
 - настроим конфиг `/etc/iscsi/initiatorname.iscsi`, внеся туда корректное имя, которое мы использовали ранее `iqn.2019-09.com.example.srv01.initiator01`
 - добавим open-iscsi в автозагрузку и запустим:
