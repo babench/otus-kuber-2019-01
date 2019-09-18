@@ -6,6 +6,7 @@ SergeSpinoza Platform repository
 2. [Домашнее задание №2, RBAC](#домашнее-задание-2)
 3. [Домашнее задание №3, Сети](#домашнее-задание-3)
 4. [Домашнее задание №4, Volumes, Storages, StatefulSet](#домашнее-задание-4)
+5. [Домашнее задание №5, Kubernetes-storage](#домашнее-задание-5)
 
 <br><br>
 ## Домашнее задание 1
@@ -175,4 +176,111 @@ The Deployment "web" is invalid: spec.strategy.rollingUpdate.maxUnavailable: Inv
 - `kubectl get pvc`
 - `kubectl get pv`
 - `kubectl describe <resource> <resource_name>`
+
+
+<br><br>
+## Домашнее задание 5
+## Kubernetes-storage
+### Выполнено
+- Подготовлен файл cluster.yaml с необходимой конфигурацией для kind;
+- В директории `hw` созданы манифесты для создания объектов StorageClass, pvc и pod;
+- Задание со * - развернут iscsi (добавлен диск lvm), в под добавлен volume iscsi, описана методика создания снапшотов и восстановления из них; 
+
+### Как запустить: 
+#### Предварительные действия: 
+- Установить go версии > 1.13 (https://sourabhbajaj.com/mac-setup/Go/README.html)
+- Установить kind (https://kind.sigs.k8s.io/docs/user/quick-start/)
+- Перейти в директорию `kubernetes-storage/cluster` и создать кластер с помощью kind с кастомным конфигом: `kind create cluster --config cluster.yaml`
+- Задать переменную окружения, для использования конфига kind: `export KUBECONFIG="$(kind get kubeconfig-path)"`
+- Установить CSI Host Path Driver: 
+  - `git clone https://github.com/kubernetes-csi/csi-driver-host-path.git`
+  - `./csi-driver-host-path/deploy/kubernetes-1.15/deploy-hostpath.sh`
+
+#### Основные действия: 
+- Перейти в директорию `kubernetes-storage/hw` и последовательно выполнить: 
+  - `kubectl apply -f 01-storageclass.yaml`
+  - `kubectl apply -f 02-storage-pvc.yaml`
+  - `kubectl apply -f 03-storage-pod.yaml`
+- Проверить результат. 
+
+#### Задание со * 
+**Для развертывания iscsi необходимо выполнить команды на чистой машине с ubuntu 18.04:**
+- `apt -y install targetcli-fb` - устанавливаем targetcli;
+- Добавляем еще один диск (допустим /dev/sdb); 
+- Произведем действия, для создания lvm 
+```
+# parted /dev/sdb
+mklabel msdos
+q
+```
+
+```
+# parted -s /dev/sdb unit mib mkpart primary 1 100% set 1 lvm on
+```
+
+```
+# pvcreate /dev/sdb1
+# vgcreate vg0 /dev/sdb1
+# lvcreate -l 10%FREE -n base vg0
+# mkfs.ext4 /dev/vg0/base
+```
+
+**Для создания блочного устройства на отдельном диске:**
+- `targetcli` - открывает targetcli
+  - `/> ls` - просмотр иерархии;
+  - `/> backstores/block create name=iscsi-disk dev=/dev/vg0/base` - создаем блочное устройство в бэксторе;
+
+**Для создания блочного устройства в виде файла на существующем диске:**
+- `mkdir /tmp/iscsi_disks`
+- `targetcli` - открывает targetcli
+  - `/> ls` - просмотр иерархии;
+  - `/> backstores/fileio create iscsi_file /tmp/iscsi_disks/disk01.img 1G` - создаем блочное устройство в бэксторе;
+
+**Далее:**
+- `/iscsi create` - создаем таргет;
+- `/iscsi` и `ls` - просмотрим название созданного таргета; 
+- `iqn.2003-01.org.linux-iscsi.iscsi-1.x8664:sn.c0904cfa5297/tpg1/` - перейдем к созданному таргету к tpg1;
+- `luns/ create /backstores/block/iscsi-disk` - создадим LUN;
+- `set attribute authentication=0` - отключим авторизацию;
+- `acls/` - перейдем в ACL;
+- `create wwn=iqn.2019-09.com.example.srv01.initiator01` - указать iqn имя инициатора, который будет иметь право подключаться к таргету (это имя потом надо будет прописать в настройках воркер-нод кластера kubernetes, подробнее ниже);
+- `cd /`, `ls`, `saveconfig` - сохраняем конфиг (по умолчанию сохраняется сюда: `/etc/rtslib-fb-target/saveconfig.json`);
+- `exit`
+(взято отсюда https://kifarunix.com/how-to-install-and-configure-iscsi-storage-server-on-ubuntu-18-04/)
+
+**Далее разворачиваем кластер (я использовал kubespray). При создании машин кластера необходимо сразу при создании добавить второй интерфейс, который будет подключен к сети где находиться iscsi.** 
+- `git clone https://github.com/kubernetes-sigs/kubespray.git`;
+- `sudo pip install -r requirements.txt`;
+- `cp -rfp inventory/sample inventory/mycluster`;
+- отредактировать файл `inventory/mycluster/inventory.ini` согласно структуре кластера;
+- `ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root --user=spinoza --key-file=~/.ssh/id_rsa cluster.yml` - развернуть кластер; 
+
+**Действия на воркер-нодах кластера kubernetes:**
+- `apt -y install open-iscsi` - установим open-iscsi
+- настроим конфиг `/etc/iscsi/initiatorname.iscsi`, внеся туда корректное имя, которое мы использовали ранее `iqn.2019-09.com.example.srv01.initiator01`
+- добавим open-iscsi в автозагрузку и запустим:
+  - `systemctl restart iscsid open-iscsi`
+  - `systemctl enable iscsid open-iscsi`
+
+**Проверка и снапшоты:**
+- `kubectl apply -f kubernetes-storage/iscsi/01-iscsi-pod.yaml` - запустим под с использованием iscsi;
+- зайдем в под `kubectl exec -it iscsi-pod -- /bin/bash`
+- создадим файлик `echo "ISCSI TEST!" > /mnt/iscsi-test.txt`
+- перейдем на машину с iscsi и создадим lvm снапшот: 
+  - `lvcreate --snapshot --size 1G  --name ss-01 /dev/vg0/base`
+- перейдем обратно в под и удалим данные - `rm -rf /mnt/iscsi-test.txt`
+- удалим сам под `kubectl delete -f kubernetes-storage/iscsi/01-iscsi-pod.yaml`
+- передем на машину с iscsi и исключим наш диск из iscsi: 
+  - `targetcli`
+  - `/> backstores/block delete iscsi-disk`
+  - `exit`
+  - восстановимся из снапшота `lvconvert --merge /dev/vg0/ss-01`
+  - `targetcli`
+  - `/> backstores/block create name=iscsi-disk dev=/dev/vg0/base`
+  - `/> /iscsi/iqn.2003-01.org.linux-iscsi.iscsi-1.x8664:sn.c0904cfa5297/tpg1/`
+  - `/> luns/ create /backstores/block/iscsi-disk`
+  - `exit`
+- снова запустим под `kubectl apply -f kubernetes-storage/iscsi/01-iscsi-pod.yaml`
+- зайдем в под `kubectl exec -it iscsi-pod -- /bin/bash`
+- проверим, что наш файл на месте `cat /mnt/iscsi-test.txt`
 
