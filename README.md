@@ -390,9 +390,11 @@ strace: Process 1 attached
 ## Домашнее задание 7
 ## Kubernetes operators
 ### Выполнено
-- Создан CRD для MySQL
+- Создан CRD для MySQL:
   - Добавлена проверка наличия всех необходимых строчек в спецификации;
-- Создали custom controller на python
+- Создали custom controller на python;
+- Создали docker образ оператора mysql;
+- Проверили работу оператора.
 
 ### Ответы на вопросы: 
 - Вопрос: почему объект создался, хотя мы создали CR, до того, как запустили контроллер?
@@ -449,6 +451,7 @@ kubectl exec -it $MYSQLPOD -- mysql -potuspassword -e "select * from test;" otus
   - `kubectl apply -f deploy-operator.yml`
 - Применить манифест cr: `kubectl apply -f cr.yml`
 - Далее добавить в базу записи и проверить восстановление из бекапа (как расписано выше в `Ручной запуск`)
+
 
 #### Необходимые выводы команд: 
 
